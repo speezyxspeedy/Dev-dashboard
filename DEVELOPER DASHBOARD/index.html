@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DevPulse — Developer Productivity Dashboard for tracking coding progress, focus sessions, tasks, and daily logs during a 365-day build-in-public challenge.">
+  <meta name="theme-color" content="#0a0d14">
+  <title>DevPulse — Developer Productivity Dashboard</title>
+  
+  <!-- Modern Typography from Google Fonts with fallback -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas for lightweight celebratory micro-confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-layout">
+    <!-- SIDEBAR NAVIGATION (Desktop & Tablet) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#dashboard" class="brand-logo" id="brand-logo" aria-label="DevPulse Home">
+          <div class="logo-icon-wrap">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span class="logo-pulse-ring"></span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">DevPulse</span>
+            <span class="brand-badge">365 CHL</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation links -->
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <div class="nav-section-label">MAIN MENU</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <button class="nav-link active" data-view="dashboard" id="nav-dashboard">
+              <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Dashboard</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="daily-log" id="nav-daily-log">
+              <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Daily Log</span>
+              <span class="nav-pill" id="nav-log-count">0</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="tasks" id="nav-tasks">
+              <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+              <span>Tasks</span>
+              <span class="nav-pill pending" id="nav-task-count">0</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="progress" id="nav-progress">
+              <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              <span>Progress</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-view="settings" id="nav-settings">
+              <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Settings</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Sidebar Mini Active Focus Widget -->
+      <div class="sidebar-timer-card">
+        <div class="st-header">
+          <span class="st-indicator" id="st-pulse-dot"></span>
+          <span class="st-title" id="st-mode-label">Focus Session</span>
+        </div>
+        <div class="st-time" id="st-time-display">25:00</div>
+        <button class="st-btn" id="st-quick-btn" title="Toggle Focus Timer">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span id="st-btn-text">Start Focus</span>
+        </button>
+      </div>
+
+      <!-- User footer info -->
+      <div class="sidebar-footer">
+        <div class="user-profile-preview" id="user-profile-trigger">
+          <div class="user-avatar" id="sidebar-avatar">DEV</div>
+          <div class="user-details">
+            <div class="user-name" id="sidebar-user-name">Developer</div>
+            <div class="user-sub" id="sidebar-user-day">Day 1 of 365</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MOBILE TOP BAR -->
+    <header class="mobile-topbar">
+      <div class="mobile-brand">
+        <div class="logo-icon-wrap sm">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <span class="brand-name">DevPulse</span>
+      </div>
+      <div class="mobile-topbar-actions">
+        <div class="mobile-streak-pill">
+          <span class="flame-icon">🔥</span>
+          <span id="mobile-streak-val">1d</span>
+        </div>
+        <button class="mobile-timer-pill" id="mobile-timer-pill" title="Jump to Pomodoro">
+          ⏱️ <span id="mobile-timer-val">25:00</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN APP CONTENT AREA -->
+    <main class="main-content" id="main-content">
+      <!-- GLOBAL TOP HEADER -->
+      <header class="dashboard-header">
+        <div class="header-greeting-block">
+          <h1 class="header-greeting" id="header-greeting">Good morning, Developer 👋</h1>
+          <p class="header-subtitle" id="header-subtitle">Day 1 of your 365-day build-in-public journey.</p>
+        </div>
+        <div class="header-action-block">
+          <div class="header-challenge-badge">
+            <span class="badge-dot"></span>
+            <span class="badge-text" id="header-day-tag">Day 1 / 365</span>
+          </div>
+          <button class="btn btn-primary" id="header-quick-log-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>Write Daily Log</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ============================================== -->
+      <!-- VIEW 1: DASHBOARD -->
+      <!-- ============================================== -->
+      <section class="app-view active" id="view-dashboard">
+        <!-- 4 Key Statistic Cards -->
+        <div class="stats-grid">
+          <!-- Card 1: Streak -->
+          <div class="stat-card streak-card" id="card-streak">
+            <div class="stat-card-header">
+              <span class="stat-label">Current Streak</span>
+              <div class="stat-icon-wrap flame">
+                <span class="stat-emoji">🔥</span>
+              </div>
+            </div>
+            <div class="stat-main">
+              <div class="stat-value" id="stat-current-streak">1 <span class="stat-unit">Day</span></div>
+              <div class="stat-sub">
+                <span class="stat-pill best-streak" id="stat-longest-streak-pill">Best: 1 Day</span>
+                <span class="stat-note">Keep momentum going!</span>
+              </div>
+            </div>
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill flame-gradient" id="streak-bar-fill" style="width: 10%;"></div>
+            </div>
+          </div>
+
+          <!-- Card 2: Coding Hours -->
+          <div class="stat-card" id="card-hours">
+            <div class="stat-card-header">
+              <span class="stat-label">Total Coding Hours</span>
+              <div class="stat-icon-wrap cyan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-main">
+              <div class="stat-value" id="stat-total-hours">2.5 <span class="stat-unit">hrs</span></div>
+              <div class="stat-sub">
+                <span class="stat-badge green" id="stat-today-hours-badge">+2.5 hrs today</span>
+                <span class="stat-note" id="stat-goal-note">Goal: 2.0 hrs/day</span>
+              </div>
+            </div>
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill cyan-gradient" id="hours-bar-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <!-- Card 3: Problems Solved -->
+          <div class="stat-card" id="card-problems">
+            <div class="stat-card-header">
+              <span class="stat-label">Problems Solved</span>
+              <div class="stat-icon-wrap violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-main">
+              <div class="stat-value" id="stat-problems-solved">3 <span class="stat-unit">solved</span></div>
+              <div class="stat-sub">
+                <span class="stat-pill purple">DSA & Algos</span>
+                <span class="stat-note" id="stat-problems-today">+3 logged today</span>
+              </div>
+            </div>
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill violet-gradient" id="problems-bar-fill" style="width: 30%;"></div>
+            </div>
+          </div>
+
+          <!-- Card 4: Projects Built & Challenge Day -->
+          <div class="stat-card" id="card-projects">
+            <div class="stat-card-header">
+              <span class="stat-label">Projects & Challenge</span>
+              <div class="stat-icon-wrap emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-main">
+              <div class="stat-value" id="stat-projects-count">1 <span class="stat-unit">built</span></div>
+              <div class="stat-sub">
+                <span class="stat-pill green" id="stat-challenge-day-pill">Day 1 of 365</span>
+                <span class="stat-note" id="stat-percent-done">0.3% completed</span>
+              </div>
+            </div>
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill emerald-gradient" id="challenge-bar-fill" style="width: 0.3%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 365-Day Challenge Calendar Section -->
+        <div class="card calendar-card" id="section-calendar">
+          <div class="calendar-header-row">
+            <div class="calendar-title-wrap">
+              <div class="section-title-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </div>
+              <div>
+                <h2 class="card-title">365-Day Challenge Contribution Matrix</h2>
+                <p class="card-subtitle">Every square is proof of showing up. Click any day to view or log activity.</p>
+              </div>
+            </div>
+
+            <!-- Calendar Key Stats -->
+            <div class="calendar-quick-stats">
+              <div class="cstat-item">
+                <span class="cstat-val" id="cal-completed-days">1</span>
+                <span class="cstat-lbl">Days Done</span>
+              </div>
+              <div class="cstat-divider"></div>
+              <div class="cstat-item">
+                <span class="cstat-val" id="cal-days-remaining">364</span>
+                <span class="cstat-lbl">Remaining</span>
+              </div>
+              <div class="cstat-divider"></div>
+              <div class="cstat-item">
+                <span class="cstat-val" id="cal-completion-pct">0.3%</span>
+                <span class="cstat-lbl">Progress</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar Scroll Container -->
+          <div class="calendar-scroll-wrap" id="calendar-scroll-container">
+            <!-- Dynamic Months Row rendered via JS -->
+            <div class="calendar-months-row" id="calendar-months-row"></div>
+            
+            <div class="calendar-body">
+              <!-- Day labels (Mon, Wed, Fri) -->
+              <div class="calendar-days-labels">
+                <span></span>
+                <span>Mon</span>
+                <span></span>
+                <span>Wed</span>
+                <span></span>
+                <span>Fri</span>
+                <span></span>
+              </div>
+
+              <!-- 365 Cells generated via JS -->
+              <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="365-Day Contribution Graph">
+                <!-- Javascript will populate 53 weeks x 7 days here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar Legend & Controls -->
+          <div class="calendar-footer-row">
+            <div class="calendar-legend">
+              <span class="legend-text">Less</span>
+              <span class="legend-box level-0" title="0 activity"></span>
+              <span class="legend-box level-1" title="1-2 hrs"></span>
+              <span class="legend-box level-2" title="2-4 hrs"></span>
+              <span class="legend-box level-3" title="4-6 hrs"></span>
+              <span class="legend-box level-4" title="6+ hrs"></span>
+              <span class="legend-text">More</span>
+            </div>
+            <div class="calendar-hint">
+              <span class="hint-bullet">●</span> Glowing border indicates <strong id="cal-today-text">Today (Day 1)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Columns: Daily Coding Timer & Today's Tasks -->
+        <div class="dashboard-two-col">
+          <!-- Column 1: Daily Coding Timer (Pomodoro) -->
+          <div class="card timer-card" id="section-timer">
+            <div class="card-header-clean">
+              <div class="card-title-group">
+                <span class="card-icon-pill">⏱️</span>
+                <h2 class="card-title">Daily Focus Timer</h2>
+              </div>
+              <span class="mode-badge" id="timer-mode-badge">Focus Session</span>
+            </div>
+
+            <div class="timer-mode-selector">
+              <button class="timer-mode-btn active" data-mode="focus" id="mode-focus-btn">Focus (25m)</button>
+              <button class="timer-mode-btn" data-mode="short-break" id="mode-short-btn">Short Break (5m)</button>
+              <button class="timer-mode-btn" data-mode="long-break" id="mode-long-btn">Long Break (15m)</button>
+            </div>
+
+            <!-- Circular Timer Display -->
+            <div class="timer-circle-wrap">
+              <svg class="timer-svg" viewBox="0 0 220 220">
+                <circle class="timer-circle-bg" cx="110" cy="110" r="95"></circle>
+                <circle class="timer-circle-progress" id="timer-progress-ring" cx="110" cy="110" r="95"></circle>
+              </svg>
+              <div class="timer-display-inner">
+                <div class="timer-time" id="timer-countdown">25:00</div>
+                <div class="timer-subtitle" id="timer-session-info">Session #1 of today</div>
+                <div class="timer-sound-indicator" id="timer-sound-indicator" title="Audio alert ready">
+                  🔊 Chime on finish
+                </div>
+              </div>
+            </div>
+
+            <!-- Timer Controls -->
+            <div class="timer-controls">
+              <button class="btn btn-secondary btn-icon" id="timer-reset-btn" title="Reset Session (R)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Reset</span>
+              </button>
+
+              <button class="btn btn-primary btn-large" id="timer-toggle-btn" title="Start/Pause (Spacebar)">
+                <svg id="timer-toggle-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span id="timer-toggle-text">Start Focus</span>
+              </button>
+
+              <button class="btn btn-secondary btn-icon" id="timer-skip-btn" title="Skip to next session">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                  <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                  <line x1="19" y1="5" x2="19" y2="19"></line>
+                </svg>
+                <span>Skip</span>
+              </button>
+            </div>
+
+            <div class="timer-footer-note">
+              <span>💡 Completing a focus session automatically logs +25 mins to today's coding hours.</span>
+            </div>
+          </div>
+
+          <!-- Column 2: Today's Tasks Preview -->
+          <div class="card tasks-preview-card" id="section-tasks-preview">
+            <div class="card-header-clean">
+              <div class="card-title-group">
+                <span class="card-icon-pill">🎯</span>
+                <h2 class="card-title">Today's Tasks</h2>
+              </div>
+              <div class="task-progress-pill" id="task-preview-progress-pill">
+                <span id="task-preview-completed-count">0</span> / <span id="task-preview-total-count">0</span> done
+              </div>
+            </div>
+
+            <!-- Task Quick Add Bar -->
+            <form class="task-quick-add" id="task-quick-form">
+              <input type="text" id="task-quick-input" placeholder="Add a new task (e.g., Solve 3 LeetCode problems)..." autocomplete="off" required>
+              <select id="task-quick-category" title="Select Category">
+                <option value="DSA">DSA</option>
+                <option value="Project" selected>Project</option>
+                <option value="Learning">Learning</option>
+                <option value="General">General</option>
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm" id="task-quick-submit-btn">
+                <span>Add</span>
+              </button>
+            </form>
+
+            <!-- Tasks List in Dashboard -->
+            <div class="task-list-wrapper">
+              <ul class="task-list" id="dashboard-task-list">
+                <!-- Javascript will render tasks here -->
+              </ul>
+            </div>
+
+            <div class="tasks-preview-footer">
+              <button class="btn-text-link" id="link-view-all-tasks">
+                <span>Manage all tasks & filters &rarr;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Logs Section in Dashboard -->
+        <div class="card recent-logs-card">
+          <div class="card-header-clean">
+            <div class="card-title-group">
+              <span class="card-icon-pill">📝</span>
+              <div>
+                <h2 class="card-title">Recent Build-in-Public Logs</h2>
+                <p class="card-subtitle">Your latest reflections and progress entries</p>
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-dash-new-log">
+              + New Daily Log
+            </button>
+          </div>
+
+          <div class="recent-logs-list" id="dashboard-recent-logs">
+            <!-- Dynamic logs will be rendered here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 2: DAILY LOG -->
+      <!-- ============================================== -->
+      <section class="app-view" id="view-daily-log">
+        <div class="view-header">
+          <div>
+            <h2 class="view-title">Daily Developer Log</h2>
+            <p class="view-subtitle">Document your 365-day build journey. Reflections solidify learning and create public accountability.</p>
+          </div>
+          <div class="view-header-stats">
+            <span class="badge-pill" id="log-streak-badge">🔥 1 Day Streak</span>
+            <span class="badge-pill" id="log-total-badge">📚 1 Total Log</span>
+          </div>
+        </div>
+
+        <!-- Form Card for New / Today's Log -->
+        <div class="card log-editor-card">
+          <form id="daily-log-form">
+            <div class="log-form-meta-row">
+              <div class="meta-field">
+                <label for="log-date-input">Log Date</label>
+                <input type="date" id="log-date-input" required>
+              </div>
+              <div class="meta-field">
+                <label for="log-hours-input">Hours Coded Today</label>
+                <input type="number" id="log-hours-input" min="0" max="24" step="0.5" value="2.5" placeholder="e.g. 2.5">
+              </div>
+              <div class="meta-field">
+                <label for="log-problems-input">Problems Solved</label>
+                <input type="number" id="log-problems-input" min="0" max="100" value="3" placeholder="e.g. 3">
+              </div>
+              <div class="meta-field">
+                <label for="log-mood-select">Day Vibe / Mood</label>
+                <select id="log-mood-select">
+                  <option value="🚀 Productive">🚀 Productive</option>
+                  <option value="🧠 Challenging">🧠 Challenging</option>
+                  <option value="💡 Breakthrough">💡 Breakthrough</option>
+                  <option value="⚡ Focused">⚡ Focused</option>
+                  <option value="☕ Chill Flow">☕ Chill Flow</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- The 4 Core Reflection Questions -->
+            <div class="log-prompts-grid">
+              <div class="prompt-group">
+                <div class="prompt-header">
+                  <span class="prompt-icon">💡</span>
+                  <label for="log-learned">What I learned today</label>
+                </div>
+                <textarea id="log-learned" rows="3" placeholder="Key concepts, architecture patterns, new syntax or mental models learned..." required></textarea>
+              </div>
+
+              <div class="prompt-group">
+                <div class="prompt-header">
+                  <span class="prompt-icon">🛠️</span>
+                  <label for="log-built">What I built today</label>
+                </div>
+                <textarea id="log-built" rows="3" placeholder="Features committed, modules designed, PRs merged, demo progress..." required></textarea>
+              </div>
+
+              <div class="prompt-group">
+                <div class="prompt-header">
+                  <span class="prompt-icon">⚠️</span>
+                  <label for="log-problems">Problems I faced</label>
+                </div>
+                <textarea id="log-problems" rows="3" placeholder="Bugs encountered, blockers, design decisions that required refactoring..."></textarea>
+              </div>
+
+              <div class="prompt-group">
+                <div class="prompt-header">
+                  <span class="prompt-icon">🎯</span>
+                  <label for="log-goals">Tomorrow's goal</label>
+                </div>
+                <textarea id="log-goals" rows="3" placeholder="Top 1-2 priorities to tackle next to keep momentum alive..."></textarea>
+              </div>
+            </div>
+
+            <div class="log-form-footer">
+              <div class="auto-save-hint">
+                <span class="save-status-dot"></span>
+                <span>Data stored locally in your browser</span>
+              </div>
+              <button type="submit" class="btn btn-primary btn-large" id="btn-save-log">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span>Save Today's Log</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Saved Logs Timeline -->
+        <div class="card log-history-card">
+          <div class="card-header-clean">
+            <div>
+              <h3 class="card-title">Saved Build Logs</h3>
+              <p class="card-subtitle">Complete chronological history of your journey</p>
+            </div>
+            <div class="log-search-wrap">
+              <input type="text" id="log-search-input" placeholder="Search logs (e.g. C++, Dijkstra)...">
+            </div>
+          </div>
+
+          <div class="log-history-list" id="log-history-list">
+            <!-- Dynamic logs will be rendered here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 3: TASKS -->
+      <!-- ============================================== -->
+      <section class="app-view" id="view-tasks">
+        <div class="view-header">
+          <div>
+            <h2 class="view-title">Task Manager</h2>
+            <p class="view-subtitle">Organize and conquer your daily coding goals. Keep shipping consistently.</p>
+          </div>
+          <div class="task-summary-badge" id="tasks-overall-badge">
+            <span id="tasks-summary-text">0 / 0 Completed (0%)</span>
+          </div>
+        </div>
+
+        <!-- Task Creator Card -->
+        <div class="card task-create-card">
+          <form id="task-full-form">
+            <div class="task-form-row">
+              <input type="text" id="task-title-input" class="task-input-lg" placeholder="What are you working on today? (e.g. Practice C++ fundamentals)" autocomplete="off" required>
+            </div>
+            <div class="task-form-meta">
+              <div class="form-control-pill">
+                <label for="task-category-select">Category:</label>
+                <select id="task-category-select">
+                  <option value="DSA">🧩 DSA & Algos</option>
+                  <option value="Project" selected>🚀 Project Build</option>
+                  <option value="Learning">📖 Learning / Docs</option>
+                  <option value="General">💼 General / Admin</option>
+                </select>
+              </div>
+
+              <div class="form-control-pill">
+                <label for="task-priority-select">Priority:</label>
+                <select id="task-priority-select">
+                  <option value="high">🔴 High Priority</option>
+                  <option value="medium" selected>🟡 Medium Priority</option>
+                  <option value="low">🟢 Low Priority</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="btn-add-full-task">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add Task</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Task Filter and Progress Overview -->
+        <div class="task-board-header">
+          <div class="task-tabs" role="tablist">
+            <button class="task-tab active" data-filter="all" id="tab-tasks-all">All Tasks (<span id="count-all-tasks">0</span>)</button>
+            <button class="task-tab" data-filter="active" id="tab-tasks-active">Active (<span id="count-active-tasks">0</span>)</button>
+            <button class="task-tab" data-filter="completed" id="tab-tasks-completed">Completed (<span id="count-completed-tasks">0</span>)</button>
+          </div>
+
+          <div class="task-board-actions">
+            <button class="btn btn-secondary btn-sm" id="btn-clear-completed-tasks">Clear Completed</button>
+          </div>
+        </div>
+
+        <!-- Task Progress Bar -->
+        <div class="task-progress-container">
+          <div class="task-progress-meta">
+            <span class="task-progress-label">Completion Status</span>
+            <span class="task-progress-percentage" id="task-bar-pct">0%</span>
+          </div>
+          <div class="task-progress-track">
+            <div class="task-progress-bar-fill" id="task-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Main Task List Container -->
+        <div class="card task-list-card">
+          <ul class="task-list" id="tasks-full-list">
+            <!-- Dynamic task items -->
+          </ul>
+          
+          <div class="empty-state" id="tasks-empty-state" style="display: none;">
+            <div class="empty-icon">🎯</div>
+            <h4 class="empty-title">No tasks in this view</h4>
+            <p class="empty-desc">Add a new task above or select another filter tab.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 4: PROGRESS & ANALYTICS -->
+      <!-- ============================================== -->
+      <section class="app-view" id="view-progress">
+        <div class="view-header">
+          <div>
+            <h2 class="view-title">Visual Analytics & Milestones</h2>
+            <p class="view-subtitle">High-fidelity metrics on your coding habits, problem-solving velocity, and 365-day trajectory.</p>
+          </div>
+          <div class="view-header-stats">
+            <span class="badge-pill green">📈 Top 5% Consistency</span>
+          </div>
+        </div>
+
+        <!-- 365-Day Completion Big Gauge -->
+        <div class="card progress-hero-card">
+          <div class="hero-progress-info">
+            <div class="hero-badge">365-DAY CHALLENGE TRAJECTORY</div>
+            <h3 class="hero-progress-title">You're on Day <span id="prog-current-day">1</span> of 365</h3>
+            <p class="hero-progress-sub">Building in public isn't about speed; it's about compounding output day after day.</p>
+            
+            <div class="hero-metrics-row">
+              <div class="hm-item">
+                <span class="hm-val" id="prog-days-done">1</span>
+                <span class="hm-lbl">Days Logged</span>
+              </div>
+              <div class="hm-item">
+                <span class="hm-val" id="prog-days-left">364</span>
+                <span class="hm-lbl">Days Left</span>
+              </div>
+              <div class="hm-item">
+                <span class="hm-val" id="prog-total-hrs">2.5 hrs</span>
+                <span class="hm-lbl">Total Time</span>
+              </div>
+              <div class="hm-item">
+                <span class="hm-val" id="prog-avg-hrs">2.5 hrs</span>
+                <span class="hm-lbl">Daily Average</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-gauge-wrap">
+            <svg class="hero-gauge-svg" viewBox="0 0 200 200">
+              <circle class="gauge-bg" cx="100" cy="100" r="80"></circle>
+              <circle class="gauge-fill" id="prog-gauge-circle" cx="100" cy="100" r="80"></circle>
+            </svg>
+            <div class="gauge-label-wrap">
+              <span class="gauge-percent" id="prog-gauge-val">0.3%</span>
+              <span class="gauge-sub">COMPLETED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid (Pure HTML/CSS/SVG, No external libraries) -->
+        <div class="progress-charts-grid">
+          <!-- Chart 1: Weekly Coding Hours -->
+          <div class="card chart-card">
+            <div class="card-header-clean">
+              <div>
+                <h3 class="card-title">Weekly Coding Hours</h3>
+                <p class="card-subtitle">Last 7 days of focus sessions & logged work</p>
+              </div>
+              <div class="chart-legend-badge">
+                <span class="legend-color cyan"></span>
+                <span>Target: 2.0h</span>
+              </div>
+            </div>
+
+            <!-- Custom Pure CSS/HTML Bar Chart -->
+            <div class="bar-chart-container" id="weekly-bar-chart">
+              <!-- Rendered via JS -->
+            </div>
+            
+            <div class="chart-footer-info">
+              <span>Weekly Total: <strong id="weekly-total-hours">2.5 hrs</strong></span>
+              <span>Daily Target: <strong id="chart-daily-target">2.0 hrs</strong></span>
+            </div>
+          </div>
+
+          <!-- Chart 2: Problems Solved & Category Breakdown -->
+          <div class="card chart-card">
+            <div class="card-header-clean">
+              <div>
+                <h3 class="card-title">DSA & Problem Breakdown</h3>
+                <p class="card-subtitle">Distribution of solved technical challenges</p>
+              </div>
+              <span class="stat-pill purple" id="total-dsa-badge">3 Solved</span>
+            </div>
+
+            <div class="category-bars-container">
+              <div class="cat-bar-item">
+                <div class="cat-bar-header">
+                  <span class="cat-name">Data Structures & Algorithms</span>
+                  <span class="cat-val" id="cat-dsa-val">3 problems (100%)</span>
+                </div>
+                <div class="cat-track">
+                  <div class="cat-fill violet-gradient" id="cat-dsa-fill" style="width: 100%;"></div>
+                </div>
+              </div>
+
+              <div class="cat-bar-item">
+                <div class="cat-bar-header">
+                  <span class="cat-name">Project Features & Architecture</span>
+                  <span class="cat-val" id="cat-proj-val">2 features</span>
+                </div>
+                <div class="cat-track">
+                  <div class="cat-fill cyan-gradient" id="cat-proj-fill" style="width: 66%;"></div>
+                </div>
+              </div>
+
+              <div class="cat-bar-item">
+                <div class="cat-bar-header">
+                  <span class="cat-name">System Design & Concepts</span>
+                  <span class="cat-val" id="cat-sys-val">1 concept</span>
+                </div>
+                <div class="cat-track">
+                  <div class="cat-fill emerald-gradient" id="cat-sys-fill" style="width: 33%;"></div>
+                </div>
+              </div>
+
+              <div class="cat-bar-item">
+                <div class="cat-bar-header">
+                  <span class="cat-name">Bug Fixes & Refactoring</span>
+                  <span class="cat-val" id="cat-bug-val">1 resolved</span>
+                </div>
+                <div class="cat-track">
+                  <div class="cat-fill flame-gradient" id="cat-bug-fill" style="width: 33%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Milestones & Badges Showcase -->
+        <div class="card milestones-card">
+          <div class="card-header-clean">
+            <div>
+              <h3 class="card-title">Challenge Milestones & Achievements</h3>
+              <p class="card-subtitle">Unlock developer accolades as your streak and hours compound</p>
+            </div>
+          </div>
+
+          <div class="badges-grid" id="milestones-grid">
+            <!-- Badge 1: Day 1 Genesis -->
+            <div class="achievement-badge unlocked">
+              <div class="badge-icon">🚀</div>
+              <div class="badge-info">
+                <div class="badge-title">Genesis Dev</div>
+                <div class="badge-desc">Started the 365-day challenge</div>
+                <div class="badge-status">Unlocked on Day 1</div>
+              </div>
+            </div>
+
+            <!-- Badge 2: 7-Day Streak -->
+            <div class="achievement-badge" id="badge-7day">
+              <div class="badge-icon">🔥</div>
+              <div class="badge-info">
+                <div class="badge-title">Week Warrior</div>
+                <div class="badge-desc">7 consecutive days of coding</div>
+                <div class="badge-status" id="badge-7day-status">1 / 7 Days</div>
+              </div>
+            </div>
+
+            <!-- Badge 3: 10 Hours -->
+            <div class="achievement-badge" id="badge-10hrs">
+              <div class="badge-icon">⏱️</div>
+              <div class="badge-info">
+                <div class="badge-title">Flow State</div>
+                <div class="badge-desc">Log 10 hours of focused work</div>
+                <div class="badge-status" id="badge-10hrs-status">2.5 / 10 hrs</div>
+              </div>
+            </div>
+
+            <!-- Badge 4: 10 Problems -->
+            <div class="achievement-badge" id="badge-10probs">
+              <div class="badge-icon">🧠</div>
+              <div class="badge-info">
+                <div class="badge-title">Algorithm Apprentice</div>
+                <div class="badge-desc">Solve 10 DSA questions</div>
+                <div class="badge-status" id="badge-10probs-status">3 / 10 Solved</div>
+              </div>
+            </div>
+
+            <!-- Badge 5: 30-Day Month -->
+            <div class="achievement-badge locked" id="badge-30day">
+              <div class="badge-icon">🛡️</div>
+              <div class="badge-info">
+                <div class="badge-title">Monthly Master</div>
+                <div class="badge-desc">Complete 30 days of the challenge</div>
+                <div class="badge-status">Day 1 / 30</div>
+              </div>
+            </div>
+
+            <!-- Badge 6: Centurion 100 -->
+            <div class="achievement-badge locked" id="badge-100hrs">
+              <div class="badge-icon">👑</div>
+              <div class="badge-info">
+                <div class="badge-title">Centurion 100</div>
+                <div class="badge-desc">Log 100 total hours of coding</div>
+                <div class="badge-status">Locked</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 5: SETTINGS -->
+      <!-- ============================================== -->
+      <section class="app-view" id="view-settings">
+        <div class="view-header">
+          <div>
+            <h2 class="view-title">Dashboard Settings</h2>
+            <p class="view-subtitle">Customize your developer profile, daily targets, visual themes, and manage local storage data.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Profile & Challenge Configuration -->
+          <div class="card settings-card">
+            <h3 class="card-title">Profile & Challenge Parameters</h3>
+            <form id="settings-profile-form">
+              <div class="setting-item">
+                <div class="setting-text">
+                  <label for="setting-dev-name" class="setting-title">Developer Name</label>
+                  <p class="setting-desc">Displayed in your greetings and dashboard header</p>
+                </div>
+                <div class="setting-input-wrap">
+                  <input type="text" id="setting-dev-name" value="Developer" required>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-text">
+                  <label for="setting-current-day" class="setting-title">Current Challenge Day</label>
+                  <p class="setting-desc">Where you currently stand in your 365-day build journey</p>
+                </div>
+                <div class="setting-input-wrap">
+                  <input type="number" id="setting-current-day" min="1" max="365" value="1" required>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-text">
+                  <label for="setting-daily-goal" class="setting-title">Daily Coding Goal (Hours)</label>
+                  <p class="setting-desc">Target hours per day to achieve green progress indicators</p>
+                </div>
+                <div class="setting-input-wrap">
+                  <input type="number" id="setting-daily-goal" min="0.5" max="16" step="0.5" value="2.0" required>
+                </div>
+              </div>
+
+              <div class="settings-save-row">
+                <button type="submit" class="btn btn-primary" id="btn-save-settings">Save Preferences</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Theme & Audio Experience -->
+          <div class="card settings-card">
+            <h3 class="card-title">Appearance & UX Audio</h3>
+            
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title">Color Theme</span>
+                <p class="setting-desc">Select your preferred developer aesthetic</p>
+              </div>
+              <div class="theme-picker-group">
+                <button class="theme-btn active" data-theme-val="dark" id="theme-dark-btn">
+                  <span class="theme-swatch dark-swatch"></span>
+                  <span>Midnight Dark</span>
+                </button>
+                <button class="theme-btn" data-theme-val="oled" id="theme-oled-btn">
+                  <span class="theme-swatch oled-swatch"></span>
+                  <span>OLED Black</span>
+                </button>
+                <button class="theme-btn" data-theme-val="light" id="theme-light-btn">
+                  <span class="theme-swatch light-swatch"></span>
+                  <span>Clean Light</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title">Audio Feedback & Chimes</span>
+                <p class="setting-desc">Synthesized web-audio alerts for timer completions and task checks</p>
+              </div>
+              <div class="toggle-switch-wrap">
+                <label class="switch" for="setting-sound-toggle">
+                  <input type="checkbox" id="setting-sound-toggle" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title">Confetti Celebrations</span>
+                <p class="setting-desc">Micro-particle confetti bursts on streak milestones and tasks</p>
+              </div>
+              <div class="toggle-switch-wrap">
+                <label class="switch" for="setting-confetti-toggle">
+                  <input type="checkbox" id="setting-confetti-toggle" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Storage & Portability (SaaS Polish) -->
+          <div class="card settings-card">
+            <h3 class="card-title">Data Backup & Portability</h3>
+            <p class="card-subtitle">All your data is preserved in your browser's LocalStorage. You can export or import your 365-day challenge state anytime.</p>
+            
+            <div class="data-actions-row">
+              <button class="btn btn-secondary" id="btn-export-data">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Export Backup (JSON)</span>
+              </button>
+
+              <label class="btn btn-secondary file-upload-label" for="file-import-input">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Import Backup</span>
+                <input type="file" id="file-import-input" accept=".json" style="display: none;">
+              </label>
+
+              <button class="btn btn-secondary" id="btn-load-sample-data" title="Seed realistic demo data">
+                <span>🔄 Load Demo Data</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Danger Zone: Reset Data -->
+          <div class="card settings-card danger-zone">
+            <div class="danger-header">
+              <span class="danger-icon">⚠️</span>
+              <div>
+                <h3 class="card-title text-danger">Danger Zone</h3>
+                <p class="card-subtitle">Permanent actions that affect your local challenge data</p>
+              </div>
+            </div>
+
+            <div class="danger-content">
+              <p>Resetting all data will wipe out all tasks, daily logs, timer history, and calendar activity stored in this browser. This cannot be undone.</p>
+              <button class="btn btn-danger" id="btn-trigger-reset-modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Reset All Data</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+      <button class="mob-nav-btn active" data-view="dashboard" id="mob-nav-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span>Home</span>
+      </button>
+      <button class="mob-nav-btn" data-view="daily-log" id="mob-nav-log">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span>Logs</span>
+      </button>
+      <button class="mob-nav-btn" data-view="tasks" id="mob-nav-tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>Tasks</span>
+      </button>
+      <button class="mob-nav-btn" data-view="progress" id="mob-nav-progress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span>Stats</span>
+      </button>
+      <button class="mob-nav-btn" data-view="settings" id="mob-nav-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL 1: DAY ACTIVITY INSPECTOR & LOGGER -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="modal-day-details" role="dialog" aria-modal="true" aria-labelledby="modal-day-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="modal-badge" id="modal-day-badge">Day 1</span>
+          <h3 class="modal-title" id="modal-day-title">Activity Details</h3>
+        </div>
+        <button class="modal-close-btn" id="modal-day-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-day-body">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-day-cancel">Close</button>
+        <button class="btn btn-primary" id="modal-day-log-shortcut">Write Log for this Day</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL 2: CONFIRMATION MODAL FOR RESET DATA -->
+  <!-- ============================================== -->
+  <div class="modal-backdrop" id="modal-confirm-reset" role="dialog" aria-modal="true" aria-labelledby="modal-reset-title">
+    <div class="modal-card modal-card-danger">
+      <div class="modal-header">
+        <div class="danger-header">
+          <span class="danger-icon">⚠️</span>
+          <div>
+            <h3 class="modal-title" id="modal-reset-title">Reset All Challenge Data?</h3>
+            <p class="modal-subtitle">This action is permanent and irreversible.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="modal-reset-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="reset-warning-text">
+          Are you sure you want to delete all saved logs, tasks, focus timer stats, and calendar records? All localStorage keys associated with <strong>DevPulse</strong> will be cleared.
+        </p>
+        <div class="reset-confirmation-check">
+          <label>
+            <input type="checkbox" id="reset-confirm-checkbox">
+            <span>I understand that all my progress will be deleted forever</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-reset-cancel">Cancel</button>
+        <button class="btn btn-danger" id="modal-reset-confirm" disabled>Yes, Wipe Everything</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- ============================================== -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
